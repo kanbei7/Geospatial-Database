@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Final Project</title>
+      <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+</head>
+<body>
+  <div id="map"/>
+  <script>
+  	
+  	var map;
+
+// 畫熱圖
+function draw_heatmap(results) {
+  var heatmapData = [];
+
+  for (var i = 0; i < results.points.length; i++) {
+
+    // 取得座標
+    var coords = results.points[i].coord;
+
+    // 要注意： LatLng 物件的經緯度順序與 GeoJSON 的座標順序相反
+    var latLng = new google.maps.LatLng(coords[1], coords[0]);
+
+    var weightedLoc = {
+      // 位置
+      location: latLng,
+      // 單位強度
+      weight: results.points[i].weight
+    };
+
+    heatmapData.push(weightedLoc);
+  }
+
+  var heatmap = new google.maps.visualization.HeatmapLayer({
+    data: heatmapData,
+    dissipating: true,
+    map: map,
+    radius: 20,
+    gradient: ['transparent', '#0f0', '#ff0', '#f00']
+  });
+}
+
+
+function initMap() {
+  var mapElement = document.getElementById("map");
+
+  map = new google.maps.Map(mapElement, { 
+    center: new google.maps.LatLng(47.6219, -122.3197),
+    zoom: 15,
+    mapTypeId: 'satellite'
+  });
+  
+  $.ajax({
+    type: 'GET',
+    url: 'file:///Users/liujiacheng/Downloads/UW/Applied%20Distributed%20Sys/project/final/Result.json',
+
+    success: function(data){
+      var geoJson = JSON.parse(data);
+      draw_heatmap(geoJson);
+    }
+  });
+  
+  
+}
+  </script>
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCu5CCdFuAnf2G2EcEETvotYLGFHN-FMyA&libraries=visualization&callback=initMap">
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
